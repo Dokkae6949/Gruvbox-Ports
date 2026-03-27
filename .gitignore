@@ -1,0 +1,17 @@
+# Artifacts
+target/
+.sqlx/
+
+# Nix Files
+.envrc
+.direnv/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+
+# Added by cargo
+
+/target
