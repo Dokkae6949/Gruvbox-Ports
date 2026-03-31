@@ -1,5 +1,7 @@
 use askama::Template;
 
+use crate::models::{Category, Port};
+
 #[derive(Debug, Clone)]
 pub struct CategoryView {
     pub name: String,
@@ -8,10 +10,18 @@ pub struct CategoryView {
 }
 
 impl CategoryView {
-    pub fn new(name: impl Into<String>, label: impl Into<String>, active: bool) -> Self {
+    pub fn all(active: bool) -> Self {
         Self {
-            name: name.into(),
-            label: label.into(),
+            name: "all".into(),
+            label: "All".into(),
+            active,
+        }
+    }
+
+    pub fn from_model(category: &Category, active: bool) -> Self {
+        Self {
+            name: category.id.clone(),
+            label: category.label.clone(),
             active,
         }
     }
@@ -26,20 +36,14 @@ pub struct PortView {
     pub category: String,
 }
 
-impl PortView {
-    pub fn new(
-        name: impl Into<String>,
-        description: impl Into<String>,
-        author: impl Into<String>,
-        url: impl Into<String>,
-        category: impl Into<String>,
-    ) -> Self {
+impl From<&Port> for PortView {
+    fn from(port: &Port) -> Self {
         Self {
-            name: name.into(),
-            description: description.into(),
-            author: author.into(),
-            url: url.into(),
-            category: category.into(),
+            name: port.name.clone(),
+            description: port.description.clone(),
+            author: port.author.clone(),
+            url: port.url.clone(),
+            category: port.category.clone(),
         }
     }
 }
@@ -50,6 +54,7 @@ pub struct IndexPage {
     pub categories: Vec<CategoryView>,
     pub ports: Vec<PortView>,
     pub search: Option<String>,
+    pub port_count: i64,
 }
 
 #[derive(Template)]

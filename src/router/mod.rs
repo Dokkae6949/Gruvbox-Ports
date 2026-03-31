@@ -4,88 +4,73 @@ use axum::{
     extract::{Query, State},
     http::HeaderMap,
     response::{Html, IntoResponse},
-    routing::{get, post},
+    routing::get,
 };
 use serde::Deserialize;
-use sqlx::{Connection, PgConnection};
 use tower_http::services::ServeDir;
 
 use crate::{
-    models,
+    models::{Category, Port},
+    state::AppState,
     templates::{CategoryView, IndexPage, MainContentPartial, PortView},
 };
 
-pub fn router(database_url: String) -> Router {
+pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(index))
         .nest_service("/public", ServeDir::new("public"))
-        .with_state(database_url)
 }
 
 #[derive(Debug, Deserialize)]
 struct FilterQuery {
-    pub category: Option<String>,
-    pub search: Option<String>,
+    category: Option<String>,
+    search: Option<String>,
 }
 
 async fn index(
-    State(database_url): State<String>,
+    State(state): State<AppState>,
     Query(query): Query<FilterQuery>,
     headers: HeaderMap,
 ) -> impl IntoResponse {
-    let mut conn = PgConnection::connect(&database_url).await.unwrap();
+    let mut conn = state.pool.acquire().await.unwrap();
 
-    // Get all categories from database
-    let db_categories = models::Category::find_all(&mut conn).await.unwrap_or_default();
-
-    let active_category = query.category.as_deref().unwrap_or("all");
-
-    // Build category views with "all" option
-    let mut categories = vec![CategoryView::new("all", "All", active_category == "all")];
-
-    for cat in db_categories {
-        categories.push(CategoryView::new(
-            &cat.id,
-            &cat.label,
-            cat.id == active_category,
-        ));
-    }
-
-    // Query ports from database with filtering and search
-    let category_filter = if active_category == "all" {
-        None
-    } else {
-        Some(active_category)
-    };
-
-    let db_ports = models::Port::find_all(&mut conn, category_filter, query.search.as_deref())
+    let db_categories = Category::find_all(&mut conn).await.unwrap_or_default();
+    let category_filter = query.category.as_deref();
+    let db_ports = Port::find_all(&mut conn, category_filter, query.search.as_deref())
         .await
         .unwrap_or_default();
 
-    // Convert database models to view models
-    let ports: Vec<PortView> = db_ports
-        .into_iter()
-        .map(|p| PortView::new(&p.name, &p.description, &p.author, &p.url, &p.category))
+    let is_all = category_filter.is_none() || category_filter == Some("all");
+    let categories: Vec<CategoryView> = std::iter::once(CategoryView::all(is_all))
+        .chain(
+            db_categories
+                .iter()
+                .map(|cat| CategoryView::from_model(cat, category_filter == Some(&cat.id))),
+        )
         .collect();
 
-    let template = if headers.contains_key("hx-request") {
-        // HTMX request - return main content partial
+    let ports: Vec<PortView> = db_ports.iter().map(PortView::from).collect();
+
+    let is_htmx = headers.contains_key("hx-request");
+    let html = if is_htmx {
         MainContentPartial {
             categories,
             ports,
-            search: query.search.clone(),
+            search: query.search,
         }
         .render()
     } else {
-        // Regular request - return full page
+        let port_count = Port::count(&mut conn).await.unwrap_or_default();
+
         IndexPage {
             categories,
             ports,
-            search: query.search.clone(),
+            search: query.search,
+            port_count,
         }
         .render()
     }
     .unwrap();
 
-    Html(template)
+    Html(html)
 }

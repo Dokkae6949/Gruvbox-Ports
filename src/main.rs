@@ -1,31 +1,19 @@
-#![allow(dead_code, unused_imports)]
-
-use std::any::Any;
-
-use askama::Template;
-use axum::{
-    Router,
-    response::{Html, IntoResponse},
-    routing::get,
-};
-use tokio::signal;
+use axum::Router;
 use tower_http::trace::TraceLayer;
 use tracing::info;
-use tracing_subscriber::{EnvFilter, filter::Directive, layer::SubscriberExt};
+use tracing_subscriber::EnvFilter;
 
-use crate::config::Config;
+use crate::{config::Config, state::AppState};
 
 mod config;
-mod db;
+mod database;
 mod models;
 mod router;
+mod state;
 mod templates;
-mod types;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Also loads .env file into environment context which
-    // is used by tracing subscriber to initialize its filter.
     let config = Config::from_env();
 
     tracing_subscriber::fmt()
@@ -36,18 +24,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     info!("Starting server on {}", config.app_url());
 
-    // Run migrations if enabled
-    if config.database_run_migrations {
-        info!("Running database migrations...");
-        db::run_migrations(&config.database_url).await?;
-        info!("Migrations completed successfully");
-    }
+    let pool = database::initialize(&config).await?;
+    let app_addr = config.app_addr();
+    let state = AppState { pool, config };
 
     let router = Router::new()
-        .merge(router::router(config.database_url.clone()))
+        .merge(router::router())
+        .with_state(state)
         .layer(TraceLayer::new_for_http());
 
-    let listener = tokio::net::TcpListener::bind(config.app_addr()).await?;
+    let listener = tokio::net::TcpListener::bind(app_addr).await?;
 
     axum::serve(listener, router)
         .with_graceful_shutdown(shutdown_signal())

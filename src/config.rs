@@ -1,7 +1,5 @@
 use serde::Deserialize;
 
-use crate::types::{Email, RawPassword};
-
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Scheme {
@@ -24,17 +22,13 @@ pub struct Config {
     pub app_port: u16,
     pub app_scheme: Scheme,
     pub database_url: String,
-    #[serde(default = "default_run_migrations")]
+    #[serde(default)]
     pub database_run_migrations: bool,
     // pub smtp_host: String,
     // pub smtp_port: u16,
     // pub smtp_username: Email,
     // pub smtp_password: RawPassword,
     // pub smtp_from: Email,
-}
-
-fn default_run_migrations() -> bool {
-    false
 }
 
 impl Config {
