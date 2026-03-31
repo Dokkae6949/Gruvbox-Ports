@@ -1,0 +1,55 @@
+use argon2::{
+    Argon2,
+    password_hash::{PasswordHasher, SaltString, rand_core::OsRng},
+};
+use serde::{Deserialize, Serialize};
+use sqlx::Type;
+use std::fmt;
+
+use crate::types::HashedPassword;
+
+#[derive(Clone, Serialize, Deserialize, Type)]
+#[serde(transparent)]
+#[sqlx(transparent)]
+pub struct RawPassword(String);
+
+impl RawPassword {
+    pub fn new(password: impl Into<String>) -> Self {
+        Self(password.into())
+    }
+
+    pub fn expose(&self) -> &str {
+        &self.0
+    }
+
+    pub fn hash(&self) -> Result<HashedPassword, argon2::password_hash::Error> {
+        let salt = SaltString::generate(&mut OsRng);
+        let argon2 = Argon2::default();
+        let password_hash = argon2.hash_password(self.0.as_bytes(), &salt)?.to_string();
+        Ok(HashedPassword::new(password_hash))
+    }
+}
+
+impl fmt::Debug for RawPassword {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "RawPassword(***)")
+    }
+}
+
+impl From<String> for RawPassword {
+    fn from(value: String) -> Self {
+        Self::new(value)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_debug_impl() {
+        let password = RawPassword::new("mysecretpassword");
+        let debug_str = format!("{:?}", password);
+        assert_eq!(debug_str, "RawPassword(***)");
+    }
+}

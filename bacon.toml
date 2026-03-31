@@ -1,0 +1,7 @@
+[jobs.server]
+command = ["cargo", "run"]
+watch = ["templates", "public", "migrations"]
+need_stdout = true
+background = false
+on_change_strategy = "kill_then_restart"
+kill = ["kill", "-s", "INT"]

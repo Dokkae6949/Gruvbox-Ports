@@ -1,0 +1,34 @@
+<section class="toolbar">
+  <div class="container">
+    <div class="search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input 
+        type="search" 
+        name="search" 
+        placeholder="Discover ports..." 
+        aria-label="Search ports"
+        {% if let Some(s) = search %}value="{{ s }}"{% endif %}
+        hx-get="/?category={% for c in categories %}{% if c.active %}{{ c.name }}{% endif %}{% endfor %}"
+        hx-trigger="keyup[key=='Enter']"
+        hx-target="#main-content"
+        hx-swap="outerHTML"
+        hx-include="[name='search']"
+        hx-push-url="true"
+      />
+    </div>
+    <nav class="categories">
+      {% for c in categories %}
+      <a 
+        href="?category={{ c.name }}{% if let Some(s) = search %}&search={{ s }}{% endif %}" 
+        hx-get="/?category={{ c.name }}{% if let Some(s) = search %}&search={{ s }}{% endif %}" 
+        hx-target="#main-content" 
+        hx-swap="outerHTML"
+        hx-push-url="true" 
+        {% if c.active %}aria-current="true" {% endif %}
+      >
+        {{ c.label }}
+      </a>
+      {% endfor %}
+    </nav>
+  </div>
+</section>

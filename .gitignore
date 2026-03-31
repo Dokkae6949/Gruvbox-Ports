@@ -11,7 +11,8 @@ target/
 .env.*
 !.env.example
 
-
 # Added by cargo
-
 /target
+
+# Editor artifacts
+.helix/

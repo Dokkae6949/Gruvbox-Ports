@@ -36,9 +36,12 @@
 
             # Language Server
             rust-analyzer
+            vscode-langservers-extracted
 
             # Tooling
             rustfmt
+            sqlx-cli
+            bacon
           ];
 
           RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";

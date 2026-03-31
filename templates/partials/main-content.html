@@ -1,0 +1,39 @@
+<main id="main-content">
+  {% include "partials/toolbar.html" %}
+  
+  <section class="ports">
+    <div class="container">
+      <div class="grid">
+        {% for port in ports %}
+        <article class="card">
+          <div class="palette">
+            <span style="background-color: var(--color-red);"></span>
+            <span style="background-color: var(--color-green);"></span>
+            <span style="background-color: var(--color-yellow);"></span>
+            <span style="background-color: var(--color-blue);"></span>
+            <span style="background-color: var(--color-purple);"></span>
+            <span style="background-color: var(--color-aqua);"></span>
+            <span style="background-color: var(--color-orange);"></span>
+          </div>
+
+          <div class="header">
+            <span class="tag">{{ port.category }}</span>
+          </div>
+
+          <h3 class="name">{{ port.name }}</h3>
+
+          <p class="description">{{ port.description }}</p>
+
+          <div class="footer">
+            <span class="author">by {{ port.author }}</span>
+            <a href="{{ port.url }}" class="link" target="_blank" rel="noopener noreferrer">
+              View
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+</main>

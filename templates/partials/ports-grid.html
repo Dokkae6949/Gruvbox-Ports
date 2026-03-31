@@ -1,0 +1,48 @@
+<!-- Primary swap: updated categories -->
+<nav class="categories" aria-label="Filter by category" id="categories">
+  {% for c in categories %}
+  <a 
+    href="?category={{ c.name }}" 
+    hx-get="/?category={{ c.name }}" 
+    hx-target="#categories" 
+    hx-swap="outerHTML"
+    hx-push-url="true" 
+    {% if c.active %}aria-current="true" {% endif %}
+  >
+    {{ c.label }}
+  </a>
+  {% endfor %}
+</nav>
+
+<!-- OOB swap: updated ports grid -->
+<div id="ports-grid" class="grid" hx-swap-oob="true">
+  {% for port in ports %}
+  <article class="card">
+    <div class="palette">
+      <span style="background-color: var(--color-red);"></span>
+      <span style="background-color: var(--color-green);"></span>
+      <span style="background-color: var(--color-yellow);"></span>
+      <span style="background-color: var(--color-blue);"></span>
+      <span style="background-color: var(--color-purple);"></span>
+      <span style="background-color: var(--color-aqua);"></span>
+      <span style="background-color: var(--color-orange);"></span>
+    </div>
+
+    <div class="header">
+      <span class="tag">{{ port.category }}</span>
+    </div>
+
+    <h3 class="name">{{ port.name }}</h3>
+
+    <p class="description">{{ port.description }}</p>
+
+    <div class="footer">
+      <span class="author">by {{ port.author }}</span>
+      <a href="{{ port.url }}" class="link" target="_blank" rel="noopener noreferrer">
+        View
+        <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+  </article>
+  {% endfor %}
+</div>

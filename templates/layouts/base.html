@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>{% block title %}Gruvbox Ports{% endblock %}</title>
+
+  <script defer src="/public/js/htmx.b4bc9e51.js"></script>
+
+  <link rel="stylesheet" href="/public/css/style.css" />
+  <link rel="stylesheet" href="/public/icons/fontawesome/css/fontawesome.min.css" />
+  <link rel="stylesheet" href="/public/icons/fontawesome/css/solid.min.css" />
+
+  {% block head %}{% endblock %}
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <div class="brand">
+        <div class="swatch" aria-hidden="true">
+          <span style="background-color: var(--color-red);"></span>
+          <span style="background-color: var(--color-yellow);"></span>
+          <span style="background-color: var(--color-green);"></span>
+          <span style="background-color: var(--color-blue);"></span>
+          <span style="background-color: var(--color-purple);"></span>
+        </div>
+        <div>
+          <h1 class="title"><span>gruvbox</span>.ports</h1>
+          <p class="count" id="port-count">— ports & themes</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+
+</html>
