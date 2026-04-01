@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use tracing::info;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Config {
@@ -17,7 +18,12 @@ pub struct Config {
 
 impl Config {
     pub fn from_env() -> Self {
-        dotenvy::dotenv().expect(".env file must be present");
+        if dotenvy::dotenv().is_ok() {
+            info!("Loaded .env file successfully");
+        } else {
+            info!("No .env file found");
+        }
+
         envy::from_env().expect("required environment variables must be provided")
     }
 
