@@ -1,14 +1,30 @@
 # Gruvbox Ports
-A simple (mostly) static website showcasing various
-gruvbox ports to different applications or services.
 
-## Setup
-The application requires a PostgreSQL database and a connection
-string provided in the `.env` file. The environment file has a
-template provided in `.env.example` which can be copied and changed
-accordingly.
+A clean, minimal web application showcasing gruvbox theme ports across various applications.
 
-Once a database is set up migrations need to either be run via the
-application or from the terminal using the `sqlx migrate run` command.
+## Prerequisites
 
-To start the application it is sufficient to run `cargo run` in a terminal.
+- PostgreSQL database
+- Environment variables in `.env` (copy from `.env.example`)
+
+## Running
+
+### Native
+```bash
+cargo run
+```
+
+### Docker
+```bash
+docker build -t gruvbox_ports .
+docker run -p 3000:3000 --env-file .env gruvbox_ports
+```
+
+## Configuration
+
+Required environment variables:
+- `APP_HOST` - Bind address (e.g., `0.0.0.0`)
+- `APP_PORT` - Server port (e.g., `3000`)
+- `APP_ORIGIN` - Public URL for CORS/cookies (e.g., `https://gruvbox.example.com`)
+- `DATABASE_URL` - PostgreSQL connection string
+- `DATABASE_RUN_MIGRATIONS` - Auto-migrate on startup (optional, default: `false`)

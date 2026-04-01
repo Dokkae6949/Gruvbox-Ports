@@ -645,6 +645,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "gruvbox_ports"
+version = "0.1.0"
+dependencies = [
+ "argon2",
+ "askama",
+ "axum",
+ "chrono",
+ "dotenvy",
+ "envy",
+ "lettre",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "thiserror",
+ "tokio",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
 name = "hashbrown"
 version = "0.14.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1466,28 +1488,6 @@ dependencies = [
  "spki",
  "subtle",
  "zeroize",
-]
-
-[[package]]
-name = "rust-htmx"
-version = "0.1.0"
-dependencies = [
- "argon2",
- "askama",
- "axum",
- "chrono",
- "dotenvy",
- "envy",
- "lettre",
- "serde",
- "serde_json",
- "sqlx",
- "thiserror",
- "tokio",
- "tower-http",
- "tracing",
- "tracing-subscriber",
- "uuid",
 ]
 
 [[package]]

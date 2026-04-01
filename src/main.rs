@@ -22,7 +22,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .compact()
         .init();
 
-    info!("Starting server on {}", config.app_url());
+    info!("Starting server at {}", config.app_addr());
 
     let pool = database::initialize(&config).await?;
     let app_addr = config.app_addr();
