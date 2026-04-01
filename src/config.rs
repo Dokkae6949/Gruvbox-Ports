@@ -8,7 +8,7 @@ pub struct Config {
     pub app_origin: String,
     pub database_url: String,
     #[serde(default)]
-    pub database_run_migrations: bool,
+    pub database_migrations: bool,
     // pub smtp_host: String,
     // pub smtp_port: u16,
     // pub smtp_username: Email,
