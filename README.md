@@ -27,4 +27,4 @@ Required environment variables:
 - `APP_PORT` - Server port (e.g., `3000`)
 - `APP_ORIGIN` - Public URL for CORS/cookies (e.g., `https://gruvbox.example.com`)
 - `DATABASE_URL` - PostgreSQL connection string
-- `DATABASE_RUN_MIGRATIONS` - Auto-migrate on startup (optional, default: `false`)
+- `DATABASE_MIGRATIONS` - Auto-migrate on startup (optional, default: `false`)
